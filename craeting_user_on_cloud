@@ -1,0 +1,52 @@
+---
+- name: This play is for Creating Useres
+  hosts: all
+  vars_prompt:
+  - name: password
+    prompt: Enter Password
+    private: yes
+    encrypt: sha512_crypt
+    confirm: yes
+    salt_size: 7
+  - name: username
+    prompt: What is your username?
+    private: no
+
+  tasks:
+  - name: Cretating the user in Debian Bases System
+    user:
+      name: "{{ username  }}"
+      create_home: yes
+      append: yes
+      groups: sudo
+      shell: /bin/bash
+      state: present
+      password: "{{ password  }}"
+    when: ansible_os_family == "Debian"
+
+  - name: Creating user in Red Hat OS
+    user:
+      name: rajkumar
+      create_home: yes
+      append: yes
+      groups: wheel
+      shell: /bin/bash
+      state: present
+      password: "{{ password  }}"
+    when: ansible_os_family == "RedHat"
+
+
+
+
+  - name: modifying the sshd file
+    lineinfile:
+      path:  "/etc/ssh/sshd_config"
+      regexp: "^PasswordAuthentication"
+      line: PasswordAuthentication Yes
+      state: present
+      backup: yes
+
+  - name: Restarting the sshd servcice
+    service:
+      name: sshd
+      state: restarted
