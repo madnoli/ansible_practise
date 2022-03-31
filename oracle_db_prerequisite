@@ -44,7 +44,7 @@
       line: "kernel.sem=250 32000 100 128"
       state: present
       backup: yes
-  - name: Adding the Kernel semmsl, semms, semopm, semmni
+  - name: Adding the file max kernel parameter
     lineinfile:
       path: "/etc/sysctl.conf"
       line: "fs.file-max=6815744"
