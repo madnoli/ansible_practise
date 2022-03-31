@@ -10,3 +10,10 @@
  This playbook will create the user id, set the password, add the user in sudo/wheel group based on system distribution. 
  
  Will edit the sshd_config file and restart the sshd service to make it accept user login with password. 
+
+## 2. Prerequisite for Oralce installation
+  
+ This playbook will do following tasks
+ 
+  1. Will crate dba and oinstall group
+  2. 
