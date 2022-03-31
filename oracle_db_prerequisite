@@ -1,0 +1,151 @@
+---
+- name: Oralce Requirement Script
+  hosts: all
+  gather_facts: yes
+  tasks:
+  - name: Installing the required packages
+    yum:
+      name: "{{ item }}"
+      state: latest
+    ignore_errors: yes
+    with_items:
+      - bc
+      - binutils
+      - compat-libcap1
+      - compat-libstdc++-33
+      - elfutils-libelf
+      - elfutils-libelf-devel
+      - fontconfig-devel
+      - glibc
+      - glibc-devel
+      - ksh
+      - libaio
+      - libaio-devel
+      - libX11
+      - libXau
+      - libXi
+      - libXtst
+      - libXrender
+      - libXrender-devel
+      - libgcc
+      - libstdc++
+      - libstdc++-devel
+      - libxcb
+      - make
+      - smartmontools
+      - sysstat
+      - ipmiutil
+      - net-tools
+      - nfs-utils
+  - name: Adding the Kernel semmsl, semms, semopm, semmni
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "kernel.sem=250 32000 100 128"
+      state: present
+      backup: yes
+
+  - name: Adding the ip_local_port_range
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "net.ipv4.ip_local_port_range=9000 65500"
+      state: present
+
+  - name: Adding the panic_on_oopn
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "kernel.panic_on_oops=1"
+      state: present
+
+  - name: Adding the aio-max-nr
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "fs.aio-max-nr=1048576"
+
+
+  - name: Adding the rmem_default
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "net.core.rmem_default=262144"
+
+
+  - name: Adding the rmem_max
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "net.core.rmem_max=4194304"
+
+  - name: Adding the wmen_default
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "net.core.wmem_default=262144"
+
+
+  - name: Adding the wmen_max
+    lineinfile:
+      path: "/etc/sysctl.conf"
+      line: "net.core.wmem_max=1048576"
+      backup: yes
+
+
+  - name: Creating the oinstall  and dba group
+    group:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - dba
+      - oinstall
+
+  - name: Cretating the oracle user
+    user:
+      name: oracle
+      state: present
+      shell: /bin/bash
+      create_home: yes
+      group: oinstall
+      append: yes
+      groups: dba,wheel
+      password: "$6$sBPVll35Xn9lOkzQ$JtdKenV0s.8uv91lE9r.EXqm0wQ6jfKTjIC3tKFBeFw7PW86vq/VeJ4ApnVH3B/AOJrOqEIMoMJcD4e4X3rJr/"
+
+  - name: Setting nofile soft limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle soft nofile 1024"
+      backup: yes
+
+
+  - name: Setting nofile hard limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle hard nofile 65536"
+
+
+
+  - name: Setting nproc soft limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle soft nproc 2047"
+
+  - name: Setting nproc hard limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle hard nproc 16384"
+
+
+  - name: Setting stack  soft limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle soft stack 10240"
+
+  - name: Setting stack  hard limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle hard stack 32768"
+
+  - name: Setting memlock  soft limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle soft memlock 3145728"
+
+  - name: Setting memlock  hard limit for oracle user
+    lineinfile:
+      path: "/etc/security/limits.conf"
+      line: "oracle hard memlock 3145728"
