@@ -15,5 +15,8 @@
   
  This playbook will do following tasks
  
-  1. Will crate dba and oinstall group
-  2. 
+       a. First it will create the oinstall and dba group
+       b. Create the oracle user, set password as "root", add in secondary group wheel and dba
+       c. Make primary group as oinstall group
+       e. Install the all required packages
+       f. Make all necessary kernel parameter changes. 
